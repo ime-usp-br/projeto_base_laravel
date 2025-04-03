@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "626b9e7ddd47fb7eff9aaa53cce0c9ad",
+    "content-hash": "04ac4a5aa2f9fdf6caee551b9a1bd5b0",
     "packages": [
         {
             "name": "brick/math",
@@ -5568,6 +5568,56 @@
                 "source": "https://github.com/tijsverkoyen/CssToInlineStyles/tree/v2.3.0"
             },
             "time": "2024-12-21T16:25:41+00:00"
+        },
+        {
+            "name": "uspdev/laravel-usp-theme",
+            "version": "2.8.14",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/uspdev/laravel-usp-theme.git",
+                "reference": "ee57f53cbf3fc95ad0ed68b5ab6d31cc64cd604e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/uspdev/laravel-usp-theme/zipball/ee57f53cbf3fc95ad0ed68b5ab6d31cc64cd604e",
+                "reference": "ee57f53cbf3fc95ad0ed68b5ab6d31cc64cd604e",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "UspTheme": "Uspdev\\UspTheme\\Facades\\UspTheme"
+                    },
+                    "providers": [
+                        "Uspdev\\UspTheme\\ServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "Uspdev\\UspTheme\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Thiago Gomes Verissimo",
+                    "email": "thiago.verissimo@usp.br"
+                }
+            ],
+            "description": "usp theme for laravel",
+            "support": {
+                "issues": "https://github.com/uspdev/laravel-usp-theme/issues",
+                "source": "https://github.com/uspdev/laravel-usp-theme/tree/2.8.14"
+            },
+            "time": "2025-03-27T13:26:35+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
