@@ -1,116 +1,94 @@
 <?php
 
+// Define the admin submenu first
 $admin = [
     [
-        'text' => '<i class="fas fa-atom"></i>  SubItem 1',
-        'url' => 'subitem1',
+        'text' => '<i class="fas fa-users"></i> Listar Usuários', // Add List Users link
+        'url'  => 'users', // Relative to admin prefix
+        'route'=> 'admin.users.index', // Use route name
     ],
     [
-        'text' => 'SubItem 2',
-        'url' => '/subitem2',
-        'can' => 'admin',
+        'type' => 'divider', // Optional Divider
     ],
     [
-        'type' => 'divider',
+        'text' => '<i class="fas fa-user-plus"></i> Criar Usuário USP',
+        'url'  => 'users/create/usp',
+        'route'=> 'admin.users.create.usp',
     ],
     [
-        'type' => 'header',
-        'text' => 'Cabeçalho',
+        'text' => '<i class="fas fa-user-edit"></i> Criar Usuário Manual',
+        'url'  => 'users/create/manual',
+        'route'=> 'admin.users.create.manual',
     ],
-    [
-        'text' => 'SubItem 3',
-        'url' => 'subitem3',
-    ],
+    // Add more admin links here later
 ];
 
+// Example submenu (keep as is if needed)
 $submenu2 = [
     [
-        'text' => 'SubItem 1',
-        'url' => 'subitem1',
+        'text' => 'SubItem 1 (Exemplo)',
+        'url' => '/subitem1-exemplo',
     ],
     [
-        'text' => 'SubItem 2',
-        'url' => 'subitem2',
-        'can' => 'admin',
+        'text' => 'SubItem 2 (Exemplo)',
+        'url' => '/subitem2-exemplo',
     ],
 ];
 
+// Main Menu Configuration
 $menu = [
     [
-        'text' => '<i class="fas fa-home"></i> Home',
-        'url' => 'home',
+        'text' => '<i class="fas fa-home"></i> Início',
+        'url'  => '/',
+        'route' => 'welcome',
     ],
     [
-        # este item de menu será substituido no momento da renderização
-        'key' => 'menu_dinamico',
+        'text' => '<i class="fas fa-tachometer-alt"></i> Painel',
+        'url'  => '/dashboard',
+        'route' => 'dashboard',
+        'can'  => 'user',
     ],
     [
-        'text' => 'Drop Down',
+        'text'    => '<i class="fas fa-cogs"></i> Exemplo Dropdown',
         'submenu' => $submenu2,
-        'can' => '',
     ],
     [
-        'text' => 'Está logado',
-        'url' => config('app.url') . '/logado', // com caminho absoluto
-        'can' => 'user',
-    ],
-    [
-        'text' => 'Menu gerente',
-        'url' => 'gerente',
-        'can' => 'gerente',
-    ],
-    [
-        'text' => 'Menu admin',
-        'submenu' => $admin,
-        'can' => 'admin',
+        'text'    => '<i class="fas fa-user-shield"></i> Área Administrativa',
+        'submenu' => $admin, // Use the $admin array as the submenu
+        'can'     => 'admin', // Restrict visibility
+        // Remove direct url/route if it's now a dropdown parent
     ],
 ];
 
+// Right Menu Configuration (remains the same as previous step)
 $right_menu = [
     [
-        // menu utilizado para views da biblioteca senhaunica-socialite.
-        'key' => 'senhaunica-socialite',
+        'text'  => '<i class="fas fa-user"></i> Perfil',
+        'url'   => '/profile',
+        'route' => 'profile.edit',
+        'can'   => 'user',
+        'align' => 'right',
     ],
     [
-        'key' => 'laravel-tools',
-    ],
-    [
-        'text' => '<i class="fas fa-cog"></i>',
-        'title' => 'Configurações',
-        'target' => '_blank',
-        'url' => config('app.url') . '/item1',
+        'text'  => '<i class="fas fa-sign-out-alt"></i> Sair',
+        'url'   => '#',
+        'id'    => 'usp-theme-logout-link',
+        'can'   => 'user',
         'align' => 'right',
     ],
 ];
 
+// Rest of the config remains the same
 return [
-    # valor default para a tag title, dentro da section title.
-    # valor pode ser substituido pela aplicação.
-    'title' => config('app.name'),
-
-    # USP_THEME_SKIN deve ser colocado no .env da aplicação
-    'skin' => env('USP_THEME_SKIN', 'uspdev'),
-
-    # chave da sessão. Troque em caso de colisão com outra variável de sessão.
-    'session_key' => 'laravel-usp-theme',
-
-    # usado na tag base, permite usar caminhos relativos nos menus e demais elementos html
-    # na versão 1 era dashboard_url
-    'app_url' => config('app.url'),
-
-    # login e logout
-    'logout_method' => 'POST',
-    'logout_url' => 'logout',
-    'login_url' => 'login',
-
-    # menus
-    'menu' => $menu,
-    'right_menu' => $right_menu,
-
-    # mensagens flash - https://uspdev.github.io/laravel#31-mensagens-flash
-    'mensagensFlash' => false,
-
-    # container ou container-fluid
-    'container' => 'container-fluid',
-
+    'title'          => config('app.name', 'Laravel USP Theme'),
+    'skin'           => env('USP_THEME_SKIN', 'uspdev'),
+    'session_key'    => 'laravel-usp-theme',
+    'app_url'        => config('app.url', '/'),
+    'logout_method'  => 'POST',
+    'logout_url'     => 'logout',
+    'login_url'      => 'login',
+    'menu'           => $menu,
+    'right_menu'     => $right_menu,
+    'mensagensFlash' => true, // Keep enabled for flash messages
+    'container'      => 'container-fluid',
 ];

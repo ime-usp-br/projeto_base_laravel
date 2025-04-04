@@ -11,9 +11,18 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Uspdev\Replicado\Pessoa;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request; 
+use Illuminate\View\View; 
 
 class UserController extends Controller
 {
+    public function index(): View
+    {
+        $users = User::with('roles')->paginate(15);
+
+        return view('admin.users.index', compact('users'));
+    }
+
     public function createUsp() {
         return view('admin.users.create_usp');
     }
