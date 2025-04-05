@@ -10,6 +10,9 @@ class PasswordConfirmationTest extends TestCase
 {
     use RefreshDatabase;
 
+	 protected $seed = true;
+
+
     public function test_confirm_password_screen_can_be_rendered(): void
     {
         $user = User::factory()->create();
@@ -24,11 +27,13 @@ class PasswordConfirmationTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)->post('/confirm-password', [
-            'password' => 'password',
+            'password' => 'password', // Assuming default factory password
         ]);
 
-        $response->assertRedirect();
+        // Default intended redirect is 'dashboard' route
+        $response->assertRedirect(route('dashboard', absolute: false));
         $response->assertSessionHasNoErrors();
+        $this->assertNotNull(session('auth.password_confirmed_at'));
     }
 
     public function test_password_is_not_confirmed_with_invalid_password(): void
@@ -39,6 +44,7 @@ class PasswordConfirmationTest extends TestCase
             'password' => 'wrong-password',
         ]);
 
-        $response->assertSessionHasErrors();
+        $response->assertSessionHasErrors('password');
+        $this->assertNull(session('auth.password_confirmed_at'));
     }
 }
