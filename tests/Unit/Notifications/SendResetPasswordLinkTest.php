@@ -6,7 +6,7 @@ use Tests\TestCase;
 use App\Models\User;
 use App\Notifications\SendResetPasswordLink;
 use Illuminate\Support\Facades\Lang;
-use Illuminate\Support\Facades\Config; // Import Config facade
+use Illuminate\Support\Facades\Config;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class SendResetPasswordLinkTest extends TestCase
@@ -16,6 +16,11 @@ class SendResetPasswordLinkTest extends TestCase
 	 protected $seed = true;
 
 
+    /**
+     * Testa o conteúdo do e-mail de link de redefinição de senha.
+     *
+     * @return void
+     */
     public function test_send_reset_password_link_mail_content(): void
     {
 

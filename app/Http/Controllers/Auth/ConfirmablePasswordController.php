@@ -12,7 +12,9 @@ use Illuminate\View\View;
 class ConfirmablePasswordController extends Controller
 {
     /**
-     * Show the confirm password view.
+     * Exibe a visão de confirmação de senha.
+     *
+     * @return \Illuminate\View\View
      */
     public function show(): View
     {
@@ -20,7 +22,11 @@ class ConfirmablePasswordController extends Controller
     }
 
     /**
-     * Confirm the user's password.
+     * Confirma a senha do usuário.
+     *
+     * @param \Illuminate\Http\Request $request A requisição atual.
+     * @return \Illuminate\Http\RedirectResponse Redireciona para a intenção original ou dashboard.
+     * @throws \Illuminate\Validation\ValidationException Se a senha fornecida for inválida.
      */
     public function store(Request $request): RedirectResponse
     {

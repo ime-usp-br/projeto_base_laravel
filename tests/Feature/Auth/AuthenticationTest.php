@@ -6,8 +6,8 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Illuminate\Support\Facades\Hash;
-use Laravel\Socialite\Facades\Socialite; // Import facade
-use Mockery; // Import Mockery
+use Laravel\Socialite\Facades\Socialite;
+use Mockery;
 
 class AuthenticationTest extends TestCase
 {
@@ -16,20 +16,30 @@ class AuthenticationTest extends TestCase
 	 protected $seed = true;
 
 
+    /**
+     * Testa se a tela de login pode ser renderizada.
+     *
+     * @return void
+     */
     public function test_login_screen_can_be_rendered(): void
     {
         $response = $this->get('/login');
 
         $response->assertStatus(200);
-        // Keep assertions - if they fail, it's likely a view/config issue now
+
         $response->assertSee('Login com Senha Única USP');
         $response->assertSee('Login com Email/Senha Local');
     }
 
+    /**
+     * Testa se usuários podem se autenticar usando a tela de login com senha local.
+     *
+     * @return void
+     */
     public function test_users_can_authenticate_using_the_login_screen_with_local_password(): void
     {
         $user = User::factory()->create([
-            'password' => Hash::make('password'), // Ensure password is set
+            'password' => Hash::make('password'),
         ]);
 
         $response = $this->post('/login', [
@@ -38,10 +48,15 @@ class AuthenticationTest extends TestCase
         ]);
 
         $this->assertAuthenticatedAs($user);
-        // Breeze default redirect is '/', let's stick to that unless overridden
+
         $response->assertRedirect('/');
     }
 
+    /**
+     * Testa se usuários não podem se autenticar com senha inválida.
+     *
+     * @return void
+     */
     public function test_users_can_not_authenticate_with_invalid_password(): void
     {
         $user = User::factory()->create();
@@ -54,6 +69,11 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
     }
 
+    /**
+     * Testa se usuários não podem se autenticar com e-mail inexistente.
+     *
+     * @return void
+     */
     public function test_users_can_not_authenticate_with_non_existent_email(): void
     {
         $this->post('/login', [
@@ -62,11 +82,16 @@ class AuthenticationTest extends TestCase
         ]);
 
         $this->assertGuest();
-        // Check for the specific error message in Portuguese
+
         $this->withViewErrors(['email' => __('auth.failed')]);
     }
 
 
+    /**
+     * Testa se usuários podem fazer logout.
+     *
+     * @return void
+     */
     public function test_users_can_logout(): void
     {
         $user = User::factory()->create();
@@ -77,26 +102,29 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect('/');
     }
 
-    // Test Senha Unica Redirect (Mocking Socialite)
+    /**
+     * Testa se o login via Senha Única redireciona corretamente.
+     *
+     * @return void
+     */
     public function test_senha_unica_login_redirects_correctly(): void
     {
-        // Mock the Socialite driver
         $providerMock = Mockery::mock('Laravel\Socialite\Contracts\Provider');
-        $providerMock->shouldReceive('redirect')->andReturn(redirect('http://fake-senhaunica-redirect-url')); // Simulate redirect response
+        $providerMock->shouldReceive('redirect')->andReturn(redirect('http://fake-senhaunica-redirect-url'));
 
-        // Tell Socialite to return the mock when 'senhaunica' driver is called
         Socialite::shouldReceive('driver')->with('senhaunica')->andReturn($providerMock);
 
-        // Make the request to the login route
         $response = $this->get('/socialite/login');
 
-        // Assert it's a redirect (status 302)
         $response->assertStatus(302);
-        // Assert it redirects to the URL provided by the mock
         $response->assertRedirect('http://fake-senhaunica-redirect-url');
     }
 
-    // Teardown Mockery
+    /**
+     * Limpa o Mockery após cada teste.
+     *
+     * @return void
+     */
     protected function tearDown(): void
     {
         Mockery::close();

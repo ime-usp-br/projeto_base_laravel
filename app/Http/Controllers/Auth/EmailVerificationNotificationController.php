@@ -9,7 +9,10 @@ use Illuminate\Http\Request;
 class EmailVerificationNotificationController extends Controller
 {
     /**
-     * Send a new email verification notification.
+     * Envia uma nova notificação de verificação de e-mail.
+     *
+     * @param \Illuminate\Http\Request $request A requisição atual.
+     * @return \Illuminate\Http\RedirectResponse Redireciona para o dashboard se já verificado, ou de volta com status.
      */
     public function store(Request $request): RedirectResponse
     {

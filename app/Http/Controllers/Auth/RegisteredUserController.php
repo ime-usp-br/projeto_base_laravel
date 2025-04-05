@@ -16,11 +16,22 @@ use Illuminate\Support\Facades\Log;
 
 class RegisteredUserController extends Controller
 {
+    /**
+     * Exibe a visão de registro.
+     *
+     * @return \Illuminate\View\View
+     */
     public function create(): View
     {
         return view('auth.register');
     }
 
+    /**
+     * Processa uma requisição de registro recebida.
+     *
+     * @param \App\Http\Requests\Auth\RegistrationRequest $request A requisição de registro validada.
+     * @return \Illuminate\Http\RedirectResponse Redireciona para a rota de aviso de confirmação.
+     */
     public function store(RegistrationRequest $request): RedirectResponse
     {
         $userType = $request->input('user_type');
@@ -32,20 +43,17 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'codpes' => ($userType === 'usp') ? $request->codpes : null,
-            'email_verified_at' => null, // <-- Always null on registration
+            'email_verified_at' => null,
         ];
 
-        // Create the user
         $user = User::create($userData);
 
-        // Ensure role exists and assign
         $role = Role::firstOrCreate(
             ['name' => $roleName],
             ['guard_name' => $guardName]
         );
         $user->assignRole($role);
 
-        // Fire the registration event (triggers verification email because User implements MustVerifyEmail)
         event(new Registered($user));
 
         Log::info("Registered user type: {$userType}, Role assigned: {$roleName} for User ID: {$user->id}. Requires verification.");

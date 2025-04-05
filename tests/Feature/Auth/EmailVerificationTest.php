@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Notification;
-use App\Notifications\VerifyUserEmail; // Use custom notification
+use App\Notifications\VerifyUserEmail;
 use Tests\TestCase;
 
 class EmailVerificationTest extends TestCase
@@ -18,6 +18,11 @@ class EmailVerificationTest extends TestCase
 	 protected $seed = true;
 
 
+    /**
+     * Testa se a tela de aviso de verificação de e-mail pode ser renderizada para usuário não verificado.
+     *
+     * @return void
+     */
     public function test_email_verification_prompt_screen_can_be_rendered_for_unverified_user(): void
     {
         $user = User::factory()->unverified()->create();
@@ -28,16 +33,25 @@ class EmailVerificationTest extends TestCase
         $response->assertSee(__('Reenviar Email de Verificação'));
     }
 
+    /**
+     * Testa se o aviso de verificação de e-mail redireciona um usuário já verificado.
+     *
+     * @return void
+     */
     public function test_email_verification_prompt_redirects_verified_user(): void
     {
-        $user = User::factory()->create(); // Verified by default
+        $user = User::factory()->create();
 
         $response = $this->actingAs($user)->get('/verify-email');
 
-        // Default redirect is to '/' with verified=1 query param
         $response->assertRedirect('/?verified=1');
     }
 
+    /**
+     * Testa se o link de verificação de e-mail pode ser reenviado.
+     *
+     * @return void
+     */
     public function test_email_verification_link_can_be_resent(): void
     {
         Notification::fake();
@@ -50,21 +64,23 @@ class EmailVerificationTest extends TestCase
         $response->assertSessionHas('status', 'verification-link-sent');
     }
 
+    /**
+     * Testa se o e-mail pode ser verificado através do link.
+     *
+     * @return void
+     */
     public function test_email_can_be_verified_via_link(): void
     {
         $user = User::factory()->unverified()->create();
 
         Event::fake();
 
-        // Generate the verification URL using the custom logic (sha1 hash)
         $verificationUrl = URL::temporarySignedRoute(
             'verification.verify',
             now()->addMinutes(60),
             ['id' => $user->id, 'hash' => sha1($user->getEmailForVerification())]
         );
 
-        // Access the verification URL *without* acting as the user initially,
-        // as the VerifyEmailController handles login after verification.
         $response = $this->get($verificationUrl);
 
         Event::assertDispatched(Verified::class, function ($event) use ($user) {
@@ -72,11 +88,16 @@ class EmailVerificationTest extends TestCase
         });
 
         $this->assertTrue($user->fresh()->hasVerifiedEmail());
-        // The custom controller redirects to '/' after verification and login
+
         $response->assertRedirect('/?verified=1');
-        $this->assertAuthenticatedAs($user->fresh()); // Check user is logged in
+        $this->assertAuthenticatedAs($user->fresh());
     }
 
+    /**
+     * Testa se o e-mail não é verificado com um hash inválido.
+     *
+     * @return void
+     */
     public function test_email_is_not_verified_with_invalid_hash(): void
     {
         $user = User::factory()->unverified()->create();
@@ -92,21 +113,26 @@ class EmailVerificationTest extends TestCase
 
         Event::assertNotDispatched(Verified::class);
         $this->assertFalse($user->fresh()->hasVerifiedEmail());
-        // The custom controller redirects to login with an error
+
         $response->assertRedirect(route('login'));
         $response->assertSessionHasErrors('email');
-        $this->assertGuest(); // User should not be logged in
+        $this->assertGuest();
     }
 
+    /**
+     * Testa se a verificação de e-mail falha com um ID de usuário inválido.
+     *
+     * @return void
+     */
     public function test_email_verification_fails_with_invalid_user_id(): void
     {
-        $user = User::factory()->unverified()->create(); // Need a user to generate a valid hash
+        $user = User::factory()->unverified()->create();
         Event::fake();
 
         $verificationUrl = URL::temporarySignedRoute(
             'verification.verify',
             now()->addMinutes(60),
-            ['id' => $user->id + 999, 'hash' => sha1($user->getEmailForVerification())] // Invalid ID
+            ['id' => $user->id + 999, 'hash' => sha1($user->getEmailForVerification())]
         );
 
         $response = $this->get($verificationUrl);
@@ -117,9 +143,14 @@ class EmailVerificationTest extends TestCase
         $this->assertGuest();
     }
 
+    /**
+     * Testa se um usuário já verificado que visita o link é redirecionado e logado.
+     *
+     * @return void
+     */
     public function test_already_verified_user_visiting_link_is_redirected_and_logged_in(): void
     {
-        $user = User::factory()->create(); // Already verified
+        $user = User::factory()->create();
         Event::fake();
 
         $verificationUrl = URL::temporarySignedRoute(
@@ -130,8 +161,8 @@ class EmailVerificationTest extends TestCase
 
         $response = $this->get($verificationUrl);
 
-        Event::assertNotDispatched(Verified::class); // Should not dispatch Verified again
-        $response->assertRedirect('/?verified=1&already=1'); // Specific redirect for already verified
+        Event::assertNotDispatched(Verified::class);
+        $response->assertRedirect('/?verified=1&already=1');
         $this->assertAuthenticatedAs($user->fresh());
     }
 }

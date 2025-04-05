@@ -9,8 +9,18 @@ use App\Models\User;
 
 class RegistrationRequest extends FormRequest
 {
+    /**
+     * Determina se o usuário está autorizado a fazer esta requisição.
+     *
+     * @return bool Sempre retorna `true`.
+     */
     public function authorize(): bool { return true; }
 
+    /**
+     * Obtém as regras de validação que se aplicam à requisição.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string> Regras de validação.
+     */
     public function rules(): array {
         $rules = [
             'name' => ['required', 'string', 'max:255'],
@@ -35,7 +45,13 @@ class RegistrationRequest extends FormRequest
 
         return $rules;
     }
-     public function messages()
+
+    /**
+     * Obtém as mensagens de erro personalizadas para as regras de validação.
+     *
+     * @return array<string, string> Mensagens de erro personalizadas.
+     */
+     public function messages(): array
     {
         return [
             'codpes.required' => 'O campo Número USP é obrigatório para membros da comunidade USP.',

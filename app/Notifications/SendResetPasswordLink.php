@@ -11,6 +11,12 @@ class SendResetPasswordLink extends ResetPasswordNotification implements ShouldQ
 {
     use Queueable;
 
+    /**
+     * Obtém a representação por e-mail da notificação.
+     *
+     * @param mixed $notifiable A entidade notificável.
+     * @return \Illuminate\Notifications\Messages\MailMessage
+     */
     public function toMail($notifiable): MailMessage
     {
         $url = url(route('password.reset', [

@@ -13,16 +13,33 @@ class VerifyUserEmail extends VerifyEmailBase implements ShouldQueue
 {
     use Queueable;
 
+    /**
+     * Cria uma nova instância da notificação.
+     *
+     * @return void
+     */
     public function __construct()
     {
 
     }
 
+    /**
+     * Obtém os canais de entrega da notificação.
+     *
+     * @param mixed $notifiable A entidade notificável.
+     * @return array<int, string>
+     */
     public function via($notifiable): array
     {
         return ['mail'];
     }
 
+    /**
+     * Obtém a URL de verificação para o notificável.
+     *
+     * @param mixed $notifiable A entidade notificável.
+     * @return string A URL assinada temporariamente.
+     */
     protected function verificationUrl($notifiable): string
     {
         return URL::temporarySignedRoute(
@@ -35,10 +52,16 @@ class VerifyUserEmail extends VerifyEmailBase implements ShouldQueue
         );
     }
 
+    /**
+     * Obtém a representação por e-mail da notificação.
+     *
+     * @param mixed $notifiable A entidade notificável.
+     * @return \Illuminate\Notifications\Messages\MailMessage
+     */
     public function toMail($notifiable): MailMessage
     {
         $verificationUrl = $this->verificationUrl($notifiable);
-        
+
         return (new MailMessage)
                     ->subject('Verifique seu Endereço de Email')
                     ->greeting('Olá!')
@@ -48,11 +71,17 @@ class VerifyUserEmail extends VerifyEmailBase implements ShouldQueue
                     ->line('Este link expirará em 60 minutos.')
                     ->salutation('Atenciosamente,');
     }
-    
+
+    /**
+     * Obtém a representação em array da notificação.
+     *
+     * @param object $notifiable A entidade notificável.
+     * @return array<string, mixed>
+     */
     public function toArray(object $notifiable): array
     {
         return [
-            //
+
         ];
     }
 }

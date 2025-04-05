@@ -13,30 +13,38 @@ class SeederTest extends TestCase
 {
     use RefreshDatabase;
 
-    // $seed = true; // Pode manter ou remover, já que o teste chama o seeder explicitamente
 
+
+    /**
+     * Configura o ambiente de teste antes de cada teste.
+     *
+     * @return void
+     */
     protected function setUp(): void
     {
         parent::setUp();
 
-        // --- CORREÇÃO: Definir conexão 'web' apontando para sqlite ---
+
         Config::set('database.connections.web', [
             'driver' => 'sqlite',
             'database' => ':memory:',
             'prefix' => '',
         ]);
-        // Forçar a conexão padrão também, como antes
+
         Config::set('database.default', 'sqlite');
-        // --- FIM DA CORREÇÃO ---
+
     }
 
 
+    /**
+     * Testa se o seeder de papéis e permissões cria os papéis e permissões esperados.
+     *
+     * @return void
+     */
     public function test_roles_and_permissions_seeder_creates_roles_and_permissions(): void
     {
-        // Executar o seeder
         $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
 
-        // Asserts (como antes)
         $this->assertDatabaseHas('roles', ['name' => 'admin', 'guard_name' => 'web']);
         $this->assertDatabaseHas('roles', ['name' => 'usp_user', 'guard_name' => 'web']);
         $this->assertDatabaseHas('roles', ['name' => 'external_user', 'guard_name' => 'web']);

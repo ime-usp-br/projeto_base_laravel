@@ -10,7 +10,7 @@ use App\Notifications\SendLocalPasswordLink;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission as SpatiePermission; // Alias to avoid conflict
+use Spatie\Permission\Models\Permission as SpatiePermission;
 
 class UspLocalPasswordTest extends TestCase
 {
@@ -19,17 +19,26 @@ class UspLocalPasswordTest extends TestCase
 	 protected $seed = true;
 
 
+    /**
+     * Configura o ambiente de teste antes de cada teste.
+     *
+     * @return void
+     */
     protected function setUp(): void
     {
         parent::setUp();
-        // Ensure roles and potentially the 'senhaunica' permission exist if checked by ->can()
+
         Role::firstOrCreate(['name' => 'usp_user', 'guard_name' => 'web']);
-        Role::firstOrCreate(['name' => 'external_user', 'guard_name' => 'web']); // Ensure external_user role exists
-        // Assuming the controller checks for the 'senhaunica' permission on the 'user' model/guard
-        // If it checks for a role instead, adjust accordingly.
+        Role::firstOrCreate(['name' => 'external_user', 'guard_name' => 'web']);
+
         SpatiePermission::firstOrCreate(['name' => 'senhaunica', 'guard_name' => 'web']);
     }
 
+    /**
+     * Testa se o formulário de solicitação de senha local pode ser renderizado.
+     *
+     * @return void
+     */
     public function test_request_local_password_form_can_be_rendered(): void
     {
         $response = $this->get(route('local-password.request'));
@@ -37,6 +46,11 @@ class UspLocalPasswordTest extends TestCase
         $response->assertViewIs('auth.request-local-password');
     }
 
+    /**
+     * Testa se o link de senha local pode ser solicitado para um usuário USP válido.
+     *
+     * @return void
+     */
     public function test_local_password_link_can_be_requested_for_valid_usp_user(): void
     {
         Notification::fake();
@@ -46,19 +60,23 @@ class UspLocalPasswordTest extends TestCase
             'codpes' => '1234567',
         ]);
         $user->assignRole('usp_user');
-        // Grant the permission if the controller checks for it explicitly
+
         $user->givePermissionTo('senhaunica');
 
         $response = $this->post(route('local-password.request'), ['email' => $user->email]);
 
-        // Assuming the code error in controller's can() check is fixed, this should pass
         Notification::assertSentTo($user, SendLocalPasswordLink::class);
         $response->assertRedirect();
         $response->assertSessionHas('status');
-        // Check for the specific message in Portuguese
+
         $response->assertSessionHas('status', __('Se um usuário USP válido existir com este email, um link para definir senha local será enviado!'));
     }
 
+    /**
+     * Testa se a solicitação de link de senha local falha para e-mail não-USP.
+     *
+     * @return void
+     */
     public function test_local_password_link_request_fails_for_non_usp_email(): void
     {
         Notification::fake();
@@ -67,10 +85,15 @@ class UspLocalPasswordTest extends TestCase
 
         Notification::assertNothingSent();
         $response->assertSessionHasErrors('email');
-        // Check for specific validation message
+
         $response->assertSessionHasErrors(['email' => 'Por favor, forneça um email usp.br válido.']);
     }
 
+    /**
+     * Testa se a solicitação de link de senha local falha para usuário inexistente.
+     *
+     * @return void
+     */
     public function test_local_password_link_request_fails_for_non_existent_user(): void
     {
         Notification::fake();
@@ -79,30 +102,38 @@ class UspLocalPasswordTest extends TestCase
 
         Notification::assertNothingSent();
         $response->assertSessionHasErrors('email');
-        // Check for specific validation message
+
         $response->assertSessionHasErrors(['email' => 'Nenhum usuário USP encontrado com este email.']);
     }
 
+    /**
+     * Testa se a solicitação de link de senha local falha para usuário sem CodPes.
+     *
+     * @return void
+     */
     public function test_local_password_link_request_fails_for_user_without_codpes(): void
     {
         Notification::fake();
 
         $user = User::factory()->create([
             'email' => 'nocodpes@usp.br',
-            'codpes' => null, // No codpes
+            'codpes' => null,
         ]);
-        $user->assignRole('external_user'); // Assign the now existing external_user role
+        $user->assignRole('external_user');
 
         $response = $this->post(route('local-password.request'), ['email' => $user->email]);
 
         Notification::assertNothingSent();
         $response->assertSessionHasErrors('email');
-        // Check for the controller's specific error message
+
         $response->assertSessionHasErrors(['email' => 'Este email não pertence a um usuário USP válido no sistema.']);
     }
 
-    // Add test for user without 'senhaunica' permission if applicable
-
+    /**
+     * Testa se o formulário de definição de senha local pode ser renderizado com assinatura válida.
+     *
+     * @return void
+     */
     public function test_set_local_password_form_can_be_rendered_with_valid_signature(): void
     {
         $user = User::factory()->create(['email' => 'test@usp.br', 'codpes' => '123']);
@@ -121,6 +152,11 @@ class UspLocalPasswordTest extends TestCase
         $response->assertSee('Defina sua nova senha local');
     }
 
+    /**
+     * Testa se o formulário de definição de senha local falha com assinatura inválida.
+     *
+     * @return void
+     */
     public function test_set_local_password_form_fails_with_invalid_signature(): void
     {
         $user = User::factory()->create(['email' => 'test@usp.br', 'codpes' => '123']);
@@ -133,15 +169,20 @@ class UspLocalPasswordTest extends TestCase
 
         $response = $this->get($invalidUrl);
 
-        $response->assertStatus(403); // Expect Forbidden due to invalid signature middleware
+        $response->assertStatus(403);
     }
 
+    /**
+     * Testa se a senha local pode ser definida com dados válidos.
+     *
+     * @return void
+     */
     public function test_local_password_can_be_set_with_valid_data(): void
     {
-        $user = User::factory()->unverified()->create([ // Start unverified to test verification
+        $user = User::factory()->unverified()->create([
             'email' => 'test@usp.br',
             'codpes' => '1234567',
-            'password' => null, // No initial password
+            'password' => null,
         ]);
          $user->assignRole('usp_user');
          $user->givePermissionTo('senhaunica');
@@ -151,7 +192,7 @@ class UspLocalPasswordTest extends TestCase
             now()->addHour(),
             ['email' => $user->email]
         );
-        // Extract parameters from the signed URL to simulate form submission
+
         parse_str(parse_url($signedUrl, PHP_URL_QUERY), $queryParams);
 
         $response = $this->post(route('local-password.set'), [
@@ -162,23 +203,27 @@ class UspLocalPasswordTest extends TestCase
             'password_confirmation' => 'new-local-password',
         ]);
 
-        // Assuming the PermissionDoesNotExist error during redirect is fixed elsewhere
         $response->assertRedirect('/');
         $response->assertSessionHas('status', 'Senha local definida com sucesso!');
         $response->assertSessionHasNoErrors();
 
         $user->refresh();
         $this->assertTrue(Hash::check('new-local-password', $user->password));
-        $this->assertNotNull($user->email_verified_at); // Should be verified now
+        $this->assertNotNull($user->email_verified_at);
         $this->assertAuthenticatedAs($user);
     }
 
+    /**
+     * Testa se a definição de senha local falha com senhas não coincidentes.
+     *
+     * @return void
+     */
     public function test_set_local_password_fails_with_password_mismatch(): void
     {
         $user = User::factory()->create([
             'email' => 'test@usp.br',
             'codpes' => '1234567',
-            'password' => Hash::make('old-password'), // Give it an initial password
+            'password' => Hash::make('old-password'),
         ]);
         $user->assignRole('usp_user');
         $user->givePermissionTo('senhaunica');
@@ -198,23 +243,26 @@ class UspLocalPasswordTest extends TestCase
             'password_confirmation' => 'different-password',
         ]);
 
-        $response->assertRedirect(route('local-password.set', $queryParams)); // Should redirect back
+        $response->assertRedirect(route('local-password.set', $queryParams));
         $response->assertSessionHasErrors('password');
-        $this->assertGuest(); // Should not be logged in
+        $this->assertGuest();
 
-        // Assert password hasn't changed from the initial one
         $this->assertTrue(Hash::check('old-password', $user->fresh()->password));
     }
 
+    /**
+     * Testa se a definição de senha local falha para usuário não-USP no POST.
+     *
+     * @return void
+     */
      public function test_set_local_password_fails_for_non_usp_user_on_post(): void
      {
          $user = User::factory()->create([
-             'email' => 'external@example.com', // Non-USP email
+             'email' => 'external@example.com',
              'codpes' => null,
          ]);
-         $user->assignRole('external_user'); // Use the now existing role
+         $user->assignRole('external_user');
 
-         // Generate a signed URL anyway to simulate the form post attempt
          $signedUrl = URL::temporarySignedRoute(
              'local-password.set',
              now()->addHour(),
@@ -230,7 +278,6 @@ class UspLocalPasswordTest extends TestCase
              'password_confirmation' => 'new-local-password',
          ]);
 
-         // The controller should reject this before setting the password
          $response->assertSessionHasErrors('email');
          $response->assertSessionHasErrors(['email' => 'Usuário não encontrado ou inválido.']);
          $this->assertGuest();

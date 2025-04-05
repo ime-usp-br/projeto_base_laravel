@@ -12,7 +12,7 @@ Route::get('/socialite/callback', [SenhaunicaController::class, 'handleProviderC
 
 Route::post('/socialite/logout', [SenhaunicaController::class, 'logout'])
      ->middleware('auth')
-     ->name('senhaunica.logout'); 
+     ->name('senhaunica.logout');
 
 Route::get('loginas', [UserController::class, 'loginAsForm'])->name('SenhaunicaLoginAsForm');
 Route::post('loginas', [UserController::class, 'loginAs'])->name('SenhaunicaLoginAs');

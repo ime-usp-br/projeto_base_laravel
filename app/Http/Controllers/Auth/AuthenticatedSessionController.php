@@ -12,7 +12,9 @@ use Illuminate\View\View;
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * Display the login view.
+     * Exibe a visão de login.
+     *
+     * @return \Illuminate\View\View
      */
     public function create(): View
     {
@@ -20,7 +22,10 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
-     * Handle an incoming authentication request.
+     * Processa uma requisição de autenticação recebida.
+     *
+     * @param \App\Http\Requests\Auth\LoginRequest $request A requisição de login validada.
+     * @return \Illuminate\Http\RedirectResponse Redireciona para a página inicial após o login.
      */
     public function store(LoginRequest $request): RedirectResponse
     {
@@ -32,7 +37,10 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
-     * Destroy an authenticated session.
+     * Destrói uma sessão autenticada (logout).
+     *
+     * @param \Illuminate\Http\Request $request A requisição atual.
+     * @return \Illuminate\Http\RedirectResponse Redireciona para a página inicial após o logout.
      */
     public function destroy(Request $request): RedirectResponse
     {

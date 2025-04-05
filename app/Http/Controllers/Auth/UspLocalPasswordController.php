@@ -12,14 +12,29 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Log;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class UspLocalPasswordController extends Controller
 {
-    public function showRequestForm() {
+    /**
+     * Exibe o formulário para solicitar o link de definição de senha local.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function showRequestForm(): View
+    {
         return view('auth.request-local-password');
     }
 
-    public function sendLink(RequestLocalPasswordLinkRequest $request) {
+    /**
+     * Envia o link para definição de senha local para um usuário USP válido.
+     *
+     * @param \App\Http\Requests\Auth\RequestLocalPasswordLinkRequest $request Requisição validada contendo o e-mail USP.
+     * @return \Illuminate\Http\RedirectResponse Redireciona de volta com status ou erros.
+     */
+    public function sendLink(RequestLocalPasswordLinkRequest $request): RedirectResponse
+    {
         $user = User::where('email', $request->validated()['email'])->first();
 
         if (!$user || empty($user->codpes) || !($user->can('user', 'senhaunica'))) {
@@ -37,7 +52,14 @@ class UspLocalPasswordController extends Controller
         return back()->with('status', __('Se um usuário USP válido existir com este email, um link para definir senha local será enviado!'));
     }
 
-    public function showSetForm(Request $request) {
+    /**
+     * Exibe o formulário para definir a senha local, validando os parâmetros da URL assinada.
+     *
+     * @param \Illuminate\Http\Request $request A requisição atual contendo os parâmetros da URL assinada.
+     * @return \Illuminate\View\View|\Illuminate\Http\Response Retorna a visão ou aborta com 403 se os parâmetros forem inválidos.
+     */
+    public function showSetForm(Request $request): View|\Illuminate\Http\Response
+    {
         $email = $request->query('email');
 
         if (!$email) {
@@ -47,19 +69,26 @@ class UspLocalPasswordController extends Controller
         $expires = $request->query('expires');
         $signature = $request->query('signature');
 
-        if (!$email || !$expires || !$signature) { 
+        if (!$email || !$expires || !$signature) {
             Log::warning('Tentativa de acesso a set-local-password com parâmetros ausentes.', $request->query());
             abort(403, 'Link inválido ou expirado. Por favor, solicite um novo link.');
         }
-        
+
         return view('auth.set-local-password', [
             'email' => $email,
             'signature' => $signature,
             'expires' => $expires,
         ]);
     }
-    
-    public function setPassword(SetLocalPasswordRequest $request) {
+
+    /**
+     * Define a senha local para o usuário USP.
+     *
+     * @param \App\Http\Requests\Auth\SetLocalPasswordRequest $request Requisição validada contendo a nova senha e os parâmetros da URL.
+     * @return \Illuminate\Http\RedirectResponse Redireciona para a página inicial com status ou de volta com erros.
+     */
+    public function setPassword(SetLocalPasswordRequest $request): RedirectResponse
+    {
          $originalParams = [
              'email' => $request->input('email'),
          ];

@@ -7,17 +7,16 @@ use Illuminate\Support\Facades\Schema;
 class UpdateSenhaunicaUsersTable extends Migration
 {
     /**
-     * Run the migrations.
+     * Executa as migrações.
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        // Caso necessário, ajuste para refletir suas necessidades
         Schema::table('users', function (Blueprint $table) {
-            $table->string('password')->nullable()->change(); # deixar opcional
+            $table->string('password')->nullable()->change();
             if (!Schema::hasColumn('users', 'codpes')) {
-                    // https://stackoverflow.com/questions/20822159/laravel-migration-with-sqlite-cannot-add-a-not-null-column-with-default-value-n
+
                     if ('sqlite' === Schema::connection($this->getConnection())->getConnection()->getDriverName()) {
                     $table->integer('codpes')->nullable();
                 } else {
@@ -28,13 +27,12 @@ class UpdateSenhaunicaUsersTable extends Migration
     }
 
     /**
-     * Reverse the migrations.
+     * Reverte as migrações.
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
-        // Não vamos remover as colunas para preservar os dados
-        //$table->dropColumn('codpes');
+
     }
 }

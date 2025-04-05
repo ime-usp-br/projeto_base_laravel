@@ -12,7 +12,9 @@ use Illuminate\Validation\ValidationException;
 class LoginRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determina se o usuário está autorizado a fazer esta requisição.
+     *
+     * @return bool Sempre retorna `true`.
      */
     public function authorize(): bool
     {
@@ -20,7 +22,7 @@ class LoginRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Obtém as regras de validação que se aplicam à requisição.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
@@ -33,9 +35,10 @@ class LoginRequest extends FormRequest
     }
 
     /**
-     * Attempt to authenticate the request's credentials.
+     * Tenta autenticar as credenciais da requisição.
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @return void
+     * @throws \Illuminate\Validation\ValidationException Se a autenticação falhar ou o limite de tentativas for atingido.
      */
     public function authenticate(): void
     {
@@ -53,9 +56,10 @@ class LoginRequest extends FormRequest
     }
 
     /**
-     * Ensure the login request is not rate limited.
+     * Garante que a requisição de login não esteja limitada por taxa (rate limited).
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @return void
+     * @throws \Illuminate\Validation\ValidationException Se o limite de tentativas for atingido.
      */
     public function ensureIsNotRateLimited(): void
     {
@@ -76,7 +80,9 @@ class LoginRequest extends FormRequest
     }
 
     /**
-     * Get the rate limiting throttle key for the request.
+     * Obtém a chave de controle de taxa (throttle key) para a requisição.
+     *
+     * @return string A chave de controle de taxa.
      */
     public function throttleKey(): string
     {

@@ -9,13 +9,14 @@ use Tests\DuskTestCase;
 class ExampleTest extends DuskTestCase
 {
     /**
-     * A basic browser test example.
+     * Um exemplo básico de teste de navegador.
+     *
+     * @param \Laravel\Dusk\Browser $browser Instância do navegador Dusk.
+     * @return void
      */
-    public function testBasicExample(): void
+    public function testBasicExample(Browser $browser): void
     {
-        $this->browse(function (Browser $browser) {
-            $browser->visit('/')
-                    ->assertSee('Laravel');
-        });
+        $browser->visit('/')
+                ->assertSee('Laravel');
     }
 }

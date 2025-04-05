@@ -12,7 +12,9 @@ use PHPUnit\Framework\Attributes\BeforeClass;
 abstract class DuskTestCase extends BaseTestCase
 {
     /**
-     * Prepare for Dusk test execution.
+     * Prepara para a execução do teste Dusk.
+     *
+     * @return void
      */
     #[BeforeClass]
     public static function prepare(): void
@@ -23,7 +25,9 @@ abstract class DuskTestCase extends BaseTestCase
     }
 
     /**
-     * Create the RemoteWebDriver instance.
+     * Cria a instância do RemoteWebDriver.
+     *
+     * @return \Facebook\WebDriver\Remote\RemoteWebDriver
      */
     protected function driver(): RemoteWebDriver
     {

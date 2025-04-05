@@ -11,27 +11,34 @@ use Illuminate\Http\RedirectResponse;
 
 class EnsureEmailIsVerifiedGlobally
 {
+    /**
+     * Processa uma requisição recebida.
+     *
+     * Redireciona usuários autenticados mas não verificados para a página de aviso de verificação,
+     * a menos que estejam acessando rotas relacionadas à verificação ou logout.
+     *
+     * @param \Illuminate\Http\Request $request A requisição HTTP recebida.
+     * @param \Closure $next O próximo middleware na pipeline.
+     * @return \Symfony\Component\HttpFoundation\Response|\Illuminate\Http\RedirectResponse A resposta HTTP.
+     */
     public function handle(Request $request, Closure $next): Response
     {
-        // Check if user is authenticated using the 'web' guard (or your default)
         if (
-            Auth::guard('web')->check() && // 1. Is user authenticated?
-            ($user = Auth::guard('web')->user()) instanceof MustVerifyEmail && // 2. Do they need verification?
-            ! $user->hasVerifiedEmail() && // 3. Have they NOT verified yet?
-            // 4. Are they NOT trying to access allowed verification-related routes?
+            Auth::guard('web')->check() &&
+            ($user = Auth::guard('web')->user()) instanceof MustVerifyEmail &&
+            ! $user->hasVerifiedEmail() &&
+
             ! $request->routeIs([
-                'verification.notice',      // The page telling them to verify
-                'verification.send',        // The route to resend the email
-                'verification.verify',      // The route the email link points to
-                'logout',                   // Allow logging out
-                // Add any other public routes they MUST be able to access while logged in but unverified
+                'verification.notice',
+                'verification.send',
+                'verification.verify',
+                'logout',
+
                 ])
         ) {
-            // 5. Redirect to the verification notice route
             return redirect()->route('verification.notice');
         }
 
-        // User is guest, doesn't need verification, is already verified, or is on an allowed route
         return $next($request);
     }
 }
