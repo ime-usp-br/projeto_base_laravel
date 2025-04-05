@@ -37,7 +37,7 @@ class UspLocalPasswordController extends Controller
     {
         $user = User::where('email', $request->validated()['email'])->first();
 
-        if (!$user || empty($user->codpes) || !($user->can('user', 'senhaunica'))) {
+        if (!$user || empty($user->codpes) || !($user->hasRole('usp_user'))) {
             Log::warning("Tentativa de senha local para usuário não USP ou sem permissão/role: {$request->validated()['email']}");
              return back()->withErrors(['email' => 'Este email não pertence a um usuário USP válido no sistema.']);
         }
@@ -95,7 +95,7 @@ class UspLocalPasswordController extends Controller
 
         $user = User::where('email', $request->validated()['email'])->first();
 
-        if (!$user || empty($user->codpes) || !($user->can('user', 'senhaunica'))) {
+        if (!$user || empty($user->codpes) || !($user->hasRole('usp_user'))) {
             Log::error("Falha ao definir senha local: usuário não encontrado ou inválido (POST).", ['email' => $request->validated()['email']]);
             return back()->withErrors(['email' => 'Usuário não encontrado ou inválido.']);
         }

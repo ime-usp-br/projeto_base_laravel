@@ -27,8 +27,11 @@ class AuthenticationTest extends TestCase
 
         $response->assertStatus(200);
 
-        $response->assertSee('Login com Senha Única USP');
-        $response->assertSee('Login com Email/Senha Local');
+        $response->assertSee(__('Log in'));
+        $response->assertSee('Login com Senha Única');
+        $response->assertSee('Esqueceu sua senha?');
+        $response->assertSee('Registrar-se');
+        $response->assertSee('Definir senha local USP');
     }
 
     /**

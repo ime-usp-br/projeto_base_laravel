@@ -61,8 +61,6 @@ class UspLocalPasswordTest extends TestCase
         ]);
         $user->assignRole('usp_user');
 
-        $user->givePermissionTo('senhaunica');
-
         $response = $this->post(route('local-password.request'), ['email' => $user->email]);
 
         Notification::assertSentTo($user, SendLocalPasswordLink::class);
@@ -185,7 +183,6 @@ class UspLocalPasswordTest extends TestCase
             'password' => null,
         ]);
          $user->assignRole('usp_user');
-         $user->givePermissionTo('senhaunica');
 
         $signedUrl = URL::temporarySignedRoute(
             'local-password.set',
@@ -260,6 +257,7 @@ class UspLocalPasswordTest extends TestCase
          $user = User::factory()->create([
              'email' => 'external@example.com',
              'codpes' => null,
+             'password' => null
          ]);
          $user->assignRole('external_user');
 

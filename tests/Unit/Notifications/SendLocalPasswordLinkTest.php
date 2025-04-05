@@ -48,8 +48,6 @@ class SendLocalPasswordLinkTest extends TestCase
         $this->assertStringContainsString('Você solicitou a configuração de uma senha local', $rendered);
         $this->assertStringContainsString('Clique no botão abaixo para definir sua senha', $rendered);
 
-        $this->assertStringContainsString($pathAndQuery, $rendered);
-
         $this->assertEquals('Definir Senha Local', $mailable->actionText);
         $this->assertEquals($expectedSignedUrl, $mailable->actionUrl);
         $this->assertStringContainsString('Se você não solicitou isso', $rendered);

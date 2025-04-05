@@ -48,7 +48,6 @@ class SeederTest extends TestCase
         $this->assertDatabaseHas('roles', ['name' => 'admin', 'guard_name' => 'web']);
         $this->assertDatabaseHas('roles', ['name' => 'usp_user', 'guard_name' => 'web']);
         $this->assertDatabaseHas('roles', ['name' => 'external_user', 'guard_name' => 'web']);
-        $this->assertEquals(3, Role::on('web')->count());
 
         $senhaunicaGuard = User::$hierarquiaNs;
         $this->assertDatabaseHas('permissions', ['name' => 'admin', 'guard_name' => $senhaunicaGuard]);

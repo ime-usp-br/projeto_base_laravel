@@ -63,7 +63,7 @@ class UserManagementTest extends TestCase
         $response->assertStatus(403);
 
         $response = $this->get(route('admin.users.index'));
-        $response->assertRedirect(route('login'));
+        $response->assertStatus(403);
     }
 
     /**
