@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Auth\UspLocalPasswordController;
+use App\Http\Controllers\Auth\CustomSenhaunicaController;
 use Uspdev\SenhaunicaSocialite\Http\Controllers\SenhaunicaController;
 
 Route::get('/', function () {
@@ -44,9 +45,9 @@ Route::post('/request-local-password', [UspLocalPasswordController::class, 'send
 Route::get('/set-local-password', [UspLocalPasswordController::class, 'showSetForm'])->middleware('signed')->name('local-password.set');
 Route::post('/set-local-password', [UspLocalPasswordController::class, 'setPassword']);
 
-Route::get('/callback', [SenhaunicaController::class, 'handleProviderCallback'])
+Route::get('/callback', [CustomSenhaunicaController::class, 'handleProviderCallback'])
     ->middleware('web')
-    ->name('senhaunica.callback.proxy');
+    ->name('senhaunica.callback');
 
 Route::view('/confirm-registration', 'auth.confirm-notice')->middleware('auth')->name('auth.confirm-notice');
 
