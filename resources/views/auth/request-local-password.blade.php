@@ -20,7 +20,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('local-password.request') }}"> {{-- POST to the sendLink route --}}
+        <form method="POST" action="{{ route('local-password.request') }}" {{ App\Helpers\disableValidationIfTesting() }}> {{-- POST to the sendLink route --}}
             @csrf
 
             <!-- Email Address -->

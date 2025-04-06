@@ -24,7 +24,7 @@
                 Defina sua nova senha local para {{ $email }}
             </h2>
 
-            <form method="POST" action="{{ route('local-password.set') }}"> {{-- POST to the setPassword route --}}
+            <form method="POST" action="{{ route('local-password.set') }}" {{ App\Helpers\disableValidationIfTesting() }}> {{-- POST to the setPassword route --}}
                 @csrf
 
                 {{-- Hidden fields to pass data necessary for POST validation --}}

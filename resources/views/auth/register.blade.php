@@ -10,7 +10,7 @@
     <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
 
         {{-- Alpine.js component scope --}}
-        <form method="POST" action="{{ route('register') }}" x-data="{ userType: '{{ old('user_type', 'external') }}' }">
+        <form method="POST" action="{{ route('register') }}" x-data="{ userType: '{{ old('user_type', 'external') }}' }" {{ App\Helpers\disableValidationIfTesting() }}>
             @csrf
 
             <!-- Name -->
@@ -33,7 +33,7 @@
 
             <!-- User Type Selection -->
             <div class="mt-4">
-                <x-input-label :value="__('Tipo de Usuário')" />
+                <x-input-label for="user_type" :value="__('Tipo de Usuário')" /> {{-- Added 'for' attribute --}}
                 <div class="flex items-center mt-1 space-x-4">
                     {{-- External User Radio --}}
                     <label for="user_type_external" class="inline-flex items-center">
@@ -54,7 +54,7 @@
             <!-- CodPes (Conditional) -->
             {{-- This div is shown/hidden by Alpine based on userType --}}
             <div class="mt-4" x-show="userType === 'usp'" x-transition>
-                <x-input-label for="codpes" :value="__('Número USP (CodPes)')" />
+                <x-input-label for="codpes" :value="__('Número USP (CodPes)')" /> {{-- Added 'for' attribute --}}
                 {{-- The :required attribute makes HTML5 validation dynamic --}}
                 <x-text-input id="codpes" class="block mt-1 w-full" type="number" name="codpes" :value="old('codpes')" x-bind:required="userType === 'usp'" autocomplete="off" />
                 <x-input-error :messages="$errors->get('codpes')" class="mt-2" />
@@ -62,7 +62,7 @@
 
             <!-- Password -->
             <div class="mt-4">
-                <x-input-label for="password" :value="__('Senha')" />
+                <x-input-label for="password" :value="__('Senha')" /> {{-- Added 'for' attribute --}}
                 <x-text-input id="password" class="block mt-1 w-full"
                                 type="password"
                                 name="password"
@@ -72,7 +72,7 @@
 
             <!-- Confirm Password -->
             <div class="mt-4">
-                <x-input-label for="password_confirmation" :value="__('Confirmar Senha')" />
+                <x-input-label for="password_confirmation" :value="__('Confirmar Senha')" /> {{-- Added 'for' attribute --}}
                 <x-text-input id="password_confirmation" class="block mt-1 w-full"
                                 type="password"
                                 name="password_confirmation" required autocomplete="new-password" />

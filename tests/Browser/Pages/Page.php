@@ -7,7 +7,7 @@ use Laravel\Dusk\Page as BasePage;
 abstract class Page extends BasePage
 {
     /**
-     * Get the global element shortcuts for the site.
+     * Obtém os atalhos globais de elemento para o site.
      *
      * @return array<string, string>
      */

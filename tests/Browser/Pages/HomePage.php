@@ -19,12 +19,13 @@ class HomePage extends Page
     /**
      * Afirma que o navegador está na página.
      *
-     * @param \Laravel\Dusk\Browser $browser Instância do navegador Dusk.
      * @return void
      */
-    public function assert(Browser $browser): void
+    public function assert(): void
     {
-
+        $this->browse(function (Browser $browser) {
+            $browser->assertPathIs($this->url());
+        });
     }
 
     /**

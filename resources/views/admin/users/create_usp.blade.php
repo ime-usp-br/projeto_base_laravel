@@ -7,7 +7,7 @@
     <h1 class="text-2xl font-semibold mb-6">Criar Novo Usuário por Número USP</h1>
 
     <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <form method="POST" action="{{ route('admin.users.store.usp') }}">
+        <form method="POST" action="{{ route('admin.users.store.usp') }}" {{ App\Helpers\disableValidationIfTesting() }}>
             @csrf
 
             <div class="mb-4">

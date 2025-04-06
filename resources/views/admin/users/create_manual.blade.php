@@ -7,7 +7,7 @@
     <h1 class="text-2xl font-semibold mb-6">Criar Novo Usuário Manualmente</h1>
 
     <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <form method="POST" action="{{ route('admin.users.store.manual') }}">
+        <form method="POST" action="{{ route('admin.users.store.manual') }}" {{ App\Helpers\disableValidationIfTesting() }}>
             @csrf
 
             {{-- Name --}}

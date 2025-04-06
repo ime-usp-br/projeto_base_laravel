@@ -65,7 +65,7 @@
                  @endhasrole
 
                  {{-- Logout Form Button --}}
-                 <form method="POST" action="{{ route('logout') }}" class="inline">
+                 <form method="POST" action="{{ route('logout') }}" class="inline" {{ App\Helpers\disableValidationIfTesting() }}>
                      @csrf
                      <button type="submit"
                              class="inline-flex items-center px-6 py-3 bg-gray-500 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-600 active:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">

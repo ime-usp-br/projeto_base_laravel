@@ -8,15 +8,18 @@ use Tests\DuskTestCase;
 
 class ExampleTest extends DuskTestCase
 {
+    use DatabaseMigrations;
+
     /**
      * Um exemplo básico de teste de navegador.
      *
-     * @param \Laravel\Dusk\Browser $browser Instância do navegador Dusk.
      * @return void
      */
-    public function testBasicExample(Browser $browser): void
+    public function test_basic_example(): void
     {
-        $browser->visit('/')
-                ->assertSee('Laravel');
+        $this->browse(function (Browser $browser) {
+            $browser->visit('/')
+                    ->assertSee('Projeto Base Dusk Testing');
+        });
     }
 }
