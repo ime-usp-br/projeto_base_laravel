@@ -111,8 +111,8 @@ class AuthenticationTest extends DuskTestCase
                  $browser->type('@text-input-email', 'nonexistent@example.com')
                         ->type('@text-input-password', 'password')
                         ->press('@primary-button-entrar')
-                        ->waitForText(__('auth.failed'), 5)
                         ->assertPathIs('/login')
+                        ->waitForText(__('auth.failed'), 5)
                         ->assertSee(__('auth.failed'))
                         ->assertGuest();
             } catch (\Throwable $e) {
@@ -168,7 +168,8 @@ class AuthenticationTest extends DuskTestCase
                 $browser->loginAs($user)
                         ->visit('/dashboard')
                         ->assertPathIs('/dashboard')
-                        ->click('#usp-theme-logout-link') // Clica no link (o JS deve interceptar e enviar POST)
+                        ->waitFor('#usp-theme-logout-link')
+                        ->click('#usp-theme-logout-link')
                         ->waitForLocation('/')
                         ->assertPathIs('/')
                         ->assertGuest();

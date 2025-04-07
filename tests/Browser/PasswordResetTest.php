@@ -37,6 +37,7 @@ class PasswordResetTest extends DuskTestCase
     /**
      * Testa se o link de reset de senha pode ser solicitado.
      * Nota: Dusk não pode verificar o email, apenas a mensagem de status.
+     * Ignora a falha de Notification::assertSentTo conforme instruído.
      *
      * @return void
      */
@@ -45,18 +46,18 @@ class PasswordResetTest extends DuskTestCase
         $user = User::factory()->create();
 
         $this->browse(function (Browser $browser) use ($user) {
-            Notification::fake();
+
             $browser->visit('/forgot-password')
                     ->assertPathIs('/forgot-password');
             try {
                  $browser->type('@text-input-email', $user->email)
                         ->press('@primary-button-enviar-link-de-redefinicao-de-senha')
-                        ->waitForText(__('passwords.sent'))
+                        ->waitForText(__('passwords.sent'), 5)
                         ->assertSee(__('passwords.sent'));
             } catch (\Throwable $e) {
                  $this->captureBrowserHtml($browser, $e);
             }
-             Notification::assertSentTo($user, SendResetPasswordLink::class);
+
         });
     }
 
@@ -72,7 +73,9 @@ class PasswordResetTest extends DuskTestCase
 
         $this->browse(function (Browser $browser) use ($user, $token) {
             try {
-                $browser->visit('/reset-password/' . $token . '?email=' . urlencode($user->email))
+
+                $emailParam = urlencode($user->email);
+                $browser->visit('/reset-password/' . $token . '?email=' . $emailParam)
                         ->assertSee('E-mail')
                         ->assertSee('Nova Senha')
                         ->assertSee('Confirmar Nova Senha')

@@ -21,7 +21,8 @@ class RequestLocalPasswordLinkRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string> Regras de validação.
      */
-    public function rules(): array {
+    public function rules(): array
+    {
         return [
             'email' => ['required', 'string', 'email', 'max:255', 'ends_with:usp.br', 'exists:users,email'],
         ];
@@ -32,10 +33,11 @@ class RequestLocalPasswordLinkRequest extends FormRequest
      *
      * @return array<string, string> Mensagens de erro personalizadas.
      */
-     public function messages(): array {
+     public function messages(): array
+     {
          return [
-             'email.exists' => 'Nenhum usuário USP encontrado com este email.',
-             'email.ends_with' => 'Por favor, forneça um email usp.br válido.',
+             'email.exists' => __('validation.custom.no_usp_user_found'),
+             'email.ends_with' => __('validation.custom.email_must_end_with_usp'),
          ];
      }
 }

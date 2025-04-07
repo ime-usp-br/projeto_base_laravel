@@ -1,4 +1,4 @@
-@props(['name', 'show' => false, 'maxWidth' => '2xl'])
+@props(['name', 'show' => false, 'maxWidth' => '2xl', 'focusable' => false])
 
 @php
 $maxWidth = [
@@ -8,16 +8,18 @@ $maxWidth = [
     'xl' => 'sm:max-w-xl',
     '2xl' => 'sm:max-w-2xl',
 ][$maxWidth];
+
+$duskSelector = Str::slug($name) . '-modal';
 @endphp
 
 <div
     x-data="{
         show: @js($show),
         focusables() {
-            // All focusable element types...
+
             let selector = 'a, button, input:not([type=\'hidden\']), textarea, select, details, [tabindex]:not([tabindex=\'-1\'])'
             return [...$el.querySelectorAll(selector)]
-                // All non-disabled elements...
+
                 .filter(el => ! el.hasAttribute('disabled'))
         },
         firstFocusable() { return this.focusables()[0] },
@@ -30,7 +32,9 @@ $maxWidth = [
     x-init="$watch('show', value => {
         if (value) {
             document.body.classList.add('overflow-y-hidden');
-            {{ $attributes->has('focusable') ? 'setTimeout(() => firstFocusable().focus(), 100)' : '' }}
+            @if ($focusable)
+                setTimeout(() => firstFocusable().focus(), 100);
+            @endif
         } else {
             document.body.classList.remove('overflow-y-hidden');
         }
@@ -43,7 +47,7 @@ $maxWidth = [
     x-show="show"
     class="fixed inset-0 overflow-y-auto px-4 py-6 sm:px-0 z-50"
     style="display: {{ $show ? 'block' : 'none' }};"
-    dusk="{{ $name }}-modal"
+    dusk="{{ $duskSelector }}"
     id="modal-{{ $name }}"
 >
     <div

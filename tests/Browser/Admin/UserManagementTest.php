@@ -191,9 +191,9 @@ class UserManagementTest extends DuskTestCase
                         ->visit('/admin/users/create/usp')
                         ->assertPathIs('/admin/users/create/usp')
                         ->press('Buscar e Criar Usuário')
-                        ->waitForText(__('validation.required', ['attribute' => 'codpes']), 5)
+                        ->waitForText(__('validation.required', ['attribute' => 'Número USP (CodPes)']), 5)
                         ->assertPathIs('/admin/users/create/usp')
-                        ->assertSee(__('validation.required', ['attribute' => 'codpes']));
+                        ->assertSee(__('validation.required', ['attribute' => 'Número USP (CodPes)']));
             } catch (\Throwable $e) {
                 $this->captureBrowserHtml($browser, $e);
             }
@@ -217,11 +217,11 @@ class UserManagementTest extends DuskTestCase
                         ->visit('/admin/users/create/manual')
                         ->assertPathIs('/admin/users/create/manual')
                         ->press('Criar Usuário')
-                        ->waitForText(__('validation.required', ['attribute' => 'nome']), 5)
+                        ->waitForText(__('validation.required', ['attribute' => 'Nome Completo']), 5)
                         ->assertPathIs('/admin/users/create/manual')
-                        ->assertSee(__('validation.required', ['attribute' => 'nome']))
-                        ->assertSee(__('validation.required', ['attribute' => 'email']))
-                        ->assertSee(__('validation.required', ['attribute' => 'senha']));
+                        ->assertSee(__('validation.required', ['attribute' => 'Nome Completo']))
+                        ->assertSee(__('validation.required', ['attribute' => 'E-mail']))
+                        ->assertSee(__('validation.required', ['attribute' => 'Senha']));
             } catch (\Throwable $e) {
                 $this->captureBrowserHtml($browser, $e);
             }

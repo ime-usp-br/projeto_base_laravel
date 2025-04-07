@@ -39,7 +39,8 @@ class RegistrationTest extends DuskTestCase
                         ->assertPathIs('/register')
                         ->assertPresent('@primary-button-registrar')
                         ->assertSee('Nome Completo')
-                        ->assertSee('Email')
+
+                        ->assertSee('E-mail')
                         ->assertSee('Tipo de Usuário')
                         ->assertSee('Externo')
                         ->assertSee('Comunidade USP')
@@ -70,7 +71,6 @@ class RegistrationTest extends DuskTestCase
                         ->press('@primary-button-registrar')
                         ->waitForLocation('/verify-email')
                         ->assertPathIs('/verify-email');
-                        // assertAuthenticated foi removido pois o estado é verificado implicitamente
             } catch (\Throwable $e) {
                 $this->captureBrowserHtml($browser, $e);
             }
@@ -82,6 +82,7 @@ class RegistrationTest extends DuskTestCase
         ]);
         $user = User::where('email', 'external.test@example.com')->first();
         $this->assertTrue($user->hasRole('external_user'));
+        $this->assertNull($user->email_verified_at);
     }
 
     /**
@@ -105,7 +106,6 @@ class RegistrationTest extends DuskTestCase
                         ->press('@primary-button-registrar')
                         ->waitForLocation('/verify-email')
                         ->assertPathIs('/verify-email');
-                         // assertAuthenticated foi removido pois o estado é verificado implicitamente
             } catch (\Throwable $e) {
                  $this->captureBrowserHtml($browser, $e);
             }
@@ -117,6 +117,7 @@ class RegistrationTest extends DuskTestCase
         ]);
         $user = User::where('email', 'usp.test@usp.br')->first();
         $this->assertTrue($user->hasRole('usp_user'));
+        $this->assertNull($user->email_verified_at);
     }
 
     /**
@@ -137,7 +138,8 @@ class RegistrationTest extends DuskTestCase
                         ->radio('user_type', 'external')
                         ->press('@primary-button-registrar')
                         ->assertPathIs('/register')
-                        ->assertSee(__('validation.confirmed', ['attribute' => 'senha']));
+                        ->waitForText(__('validation.confirmed', ['attribute' => 'Senha']), 5)
+                        ->assertSee(__('validation.confirmed', ['attribute' => 'Senha']));
             } catch (\Throwable $e) {
                  $this->captureBrowserHtml($browser, $e);
             }
@@ -163,9 +165,9 @@ class RegistrationTest extends DuskTestCase
                         ->waitFor('@text-input-codpes')
                         ->type('@text-input-codpes', '1122334')
                         ->press('@primary-button-registrar')
-                        ->waitForText('Para membros da comunidade USP, o email deve terminar com usp.br.', 5)
+                        ->waitForText(__('validation.custom.email_must_end_with_usp'), 5)
                         ->assertPathIs('/register')
-                        ->assertSee('Para membros da comunidade USP, o email deve terminar com usp.br.');
+                        ->assertSee(__('validation.custom.email_must_end_with_usp'));
             } catch (\Throwable $e) {
                  $this->captureBrowserHtml($browser, $e);
             }
@@ -189,11 +191,12 @@ class RegistrationTest extends DuskTestCase
                         ->type('@text-input-password_confirmation', 'password123')
                         ->radio('user_type', 'usp')
                         ->waitFor('@text-input-codpes')
-                        ->type('@text-input-codpes', '') // Ensure the field is empty but interacted with
+                        ->type('@text-input-codpes', '')
                         ->press('@primary-button-registrar')
-                        ->waitForText(__('validation.required', ['attribute' => 'número usp (codpes)']), 5)
+
+                        ->waitForText(__('validation.custom.codpes_required_for_usp'), 5)
                         ->assertPathIs('/register')
-                        ->assertSee(__('validation.required', ['attribute' => 'número usp (codpes)']));
+                        ->assertSee(__('validation.custom.codpes_required_for_usp'));
             } catch (\Throwable $e) {
                 $this->captureBrowserHtml($browser, $e);
             }

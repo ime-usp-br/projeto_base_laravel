@@ -14,6 +14,7 @@
         x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
     >{{ __('Excluir Conta') }}</x-danger-button>
 
+
     <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable>
         <form method="post" action="{{ route('profile.destroy') }}" class="p-6" {{ App\Helpers\disableValidationIfTesting() }}>
             @csrf
@@ -28,7 +29,7 @@
             </p>
 
             <div class="mt-6">
-                <x-input-label for="password" value="{{ __('Senha') }}" class="sr-only" /> {{-- Added 'for' attribute --}}
+                <x-input-label for="password" value="{{ __('Senha') }}" class="sr-only" />
 
                 <x-text-input
                     id="password"
@@ -37,6 +38,7 @@
                     class="mt-1 block w-3/4"
                     placeholder="{{ __('Senha') }}"
                 />
+
 
                 <x-input-error :messages="$errors->userDeletion->get('password')" class="mt-2" />
             </div>

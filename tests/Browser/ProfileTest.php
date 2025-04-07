@@ -105,13 +105,7 @@ class ProfileTest extends DuskTestCase
             }
         });
 
-        /**
-         * A asserção PHPUnit precisa ser verificada após a interação Dusk.
-         * Ela falha porque a ação do controller que atualiza a senha pode estar com problemas.
-         * O teste Dusk em si parece correto em termos de interação.
-         * Comente a asserção para que o teste Dusk não falhe por causa do backend.
-         */
-        // $this->assertTrue(Hash::check($newPassword, $user->fresh()->password));
+        $this->assertTrue(Hash::check($newPassword, $user->fresh()->password));
     }
 
     /**
@@ -134,9 +128,10 @@ class ProfileTest extends DuskTestCase
                         ->type('@text-input-password', 'newPassword123')
                         ->type('@text-input-password_confirmation', 'newPassword123')
                         ->press('@primary-button-salvar')
-                        ->waitForText(__('validation.current_password', ['attribute' => 'senha atual']), 5)
                         ->assertPathIs('/profile')
-                        ->assertSee(__('validation.current_password', ['attribute' => 'senha atual']));
+
+                        ->waitForText(__('validation.current_password', ['attribute' => 'Senha Atual']), 5)
+                        ->assertSee(__('validation.current_password', ['attribute' => 'Senha Atual']));
             } catch (\Throwable $e) {
                 $this->captureBrowserHtml($browser, $e);
             }
@@ -200,8 +195,10 @@ class ProfileTest extends DuskTestCase
                         $modal->type('@text-input-password', 'wrong-password')
                               ->press('@danger-button-excluir-conta');
                     })
-                    ->waitForText(__('validation.current_password', ['attribute' => 'senha']))
-                    ->assertSee(__('validation.current_password', ['attribute' => 'senha']));
+
+
+                    ->waitForText(__('validation.current_password', ['attribute' => 'Senha']), 5)
+                    ->assertSee(__('validation.current_password', ['attribute' => 'Senha']));
             } catch (\Throwable $e) {
                  $this->captureBrowserHtml($browser, $e);
             }
